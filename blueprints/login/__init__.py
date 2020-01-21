@@ -22,7 +22,7 @@ class CreateTokenResource(Resource):
             return {'token' : token, 'isadmin' : True}, 200
         
         encrypted = hashlib.md5(args['password'].encode()).hexdigest()
-        qry = Users.query.filter_by(username = args['username']).filter_by(password = encrypted)
+        qry = Users.query.filter_by(username = args['username']).filter_by(password = encrypted).filter_by(deleted = False)
         data_user = qry.first()
 
         if data_user is not None:
