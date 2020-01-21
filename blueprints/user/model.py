@@ -8,19 +8,20 @@ class Users(db.Model):
     username = db.Column(db.String(50), unique = True, nullable = False)
     email = db.Column(db.String(180), unique = True, nullable = False)
     password = db.Column(db.String(255), nullable = False)
+    deleted = db.Column(db.Boolean, nullable = False, default=False)
 
     response_fields = {
         'id' : fields.Integer,
         'username' : fields.String,
         'email' : fields.String,
-        'password': fields.String
+        'password': fields.String,
+        'deleted' : fields.Boolean
     }
 
     jwt_claims_fields = {
         'id' : fields.Integer,
         'username' : fields.String,
-        'email' : fields.String,
-        # 'isadmin' : fields.Boolean
+        'email' : fields.String
     }
 
     def __init__(self, username, email, password):
