@@ -11,16 +11,6 @@ class CreateTokenResource(Resource):
 
     # login and get token
     def get(self):
-        """
-        Parameters
-        ----------
-        name : str
-            The name of the animal
-        sound : str
-            The sound the animal makes
-        num_legs : int, optional
-            The number of legs the animal (default is 4)
-        """
         parser = reqparse.RequestParser()
         parser.add_argument('username', location = 'args', required = True)
         parser.add_argument('password', location = 'args', required = True)
