@@ -6,12 +6,13 @@ import json, datetime, hashlib
 from . import *
 from blueprints import db, app
 from blueprints.transaksi.model import Transaksi, TransaksiDetails
+from blueprints.produk.model import Produk
 from flask_jwt_extended  import jwt_required, verify_jwt_in_request, get_jwt_claims
 
 bp_transaksi = Blueprint('transaksi',__name__)
 api = Api(bp_transaksi)
 
-class TransaksiUserResources(Resource):
+class TransaksiResources(Resource):
 
     # lihat transaksi (user)
     @jwt_required
@@ -30,5 +31,25 @@ class TransaksiUserResources(Resource):
 
     def options(self):
         return {}, 200
+class TransaksiDetailResources(Resource):
 
-api.add_resource(TransaksiUserResources,'')
+    # lihat transaksi detail
+    @jwt_required
+    def get(self, id):
+
+        qry_transaksi_detail = TransaksiDetails.query.filter_by(transaksi_id = id)
+
+        if qry_transaksi_detail is not None:
+            list_produk = []
+            for produk in qry_transaksi_detail:
+                marshal_produk = marshal(produk, TransaksiDetails.response_fields)
+                marshal_produk['produk'] = marshal(Produk.query.get(produk.produk_id), Produk.response_fields)
+                list_produk.append(marshal_produk)
+
+            return list_produk, 200
+
+    def options(self):
+        return {}, 200
+
+api.add_resource(TransaksiResources,'')
+api.add_resource(TransaksiDetailResources,'/<int:id>')
