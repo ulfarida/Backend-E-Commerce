@@ -105,6 +105,32 @@ class KeranjangbyIdResources(Resource):
         else:
             return {'message' : 'produk tidak ditemukan'}, 404
 
+    #edit kuantitas keranjang details
+    @jwt_required
+    def put(self, id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('kuantitas', location = 'json', required = False)
+        args = parser.parse_args()
+
+
+        qry_keranjang_details = KeranjangDetails.query.get(id)
+
+        if qry_keranjang_details is not None:
+            qry_produk = Produk.query.filter_by(id = qry_keranjang_details.produk_id).filter_by(deleted=False)
+            data_produk = qry_produk.first()
+            if args['kuantitas'] is not None:
+                qry_keranjang_details.kuantitas = args['kuantitas']
+                harga_awal = qry_keranjang_details.harga
+                harga_akhir = data_produk.harga * int(args['kuantitas'])
+                qry_keranjang_details.harga = harga_akhir
+                Keranjang.query.get(qry_keranjang_details.keranjang_id).total_harga += (harga_akhir - harga_awal)
+
+            db.session.commit()
+            return {'message' : 'edit keranjang berhasil'}, 200
+
+        else:
+            return {'message' : 'keranjang tidak ditemukan'}, 404
+
     def options(self):
         return {}, 200
 
